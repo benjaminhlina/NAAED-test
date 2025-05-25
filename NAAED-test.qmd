@@ -1,12 +1,12 @@
 ---
 title: "Energy Density Data Form"
-format: 
+format:
   html:
-    grid:
-      body-width: 2000px
+    grid: 
+      body-width: 1300px
     resources: 
       - shinylive-sw.js
-filters: 
+filters:
   - shinylive 
 ---
 # test 
@@ -14,24 +14,24 @@ filters:
 ```{shinylive-r}
 #| standalone: true 
 {
-  library(dplyr)
   library(DT) 
-  library(here)
-  library(readr)
-  library(openxlsx)
   library(shiny)
 }
 
 # Define column names
-column_names <- read_csv(here(
-  # 'data-resources', 
-  "data-raw",
-                              "column_names_tbl_sample.csv"))
+column_names <- data.frame(columns = c("project_id", 
+                                       "date", "month", "year", 
+                                       "scientific_name", "wild_lab", 
+                                       "lifestage", "age", "sex", 
+                                       "fork_length", "total_length", "weight", 
+                                       "composite", "composite_n", 
+                                       "tissue_type", "sample_procedure", 
+                                       "waterbody", "area", "site", 
+                                       "site_depth", "latitude (dd.ddddd)", 
+                                       "longitude (ddd.ddddd)", 
+                                       "calorimetry_method")
+)
 
-fw_fish_genus_sp <- read_csv(here(
-   # 'data-resources', 
-   "data-raw",
-                                  "fw_fish_genus_sepcies.csv"))
 
 # ---- shiny appp ----- 
 ui <- fluidPage(
@@ -86,9 +86,9 @@ ui <- fluidPage(
       downloadButton("download", "Download Excel")
     ),
     
-    # mainPanel(
-    #   DTOutput("table")
-    # )
+    mainPanel(
+      DTOutput("table")
+    )
   )
 )
 
@@ -96,7 +96,7 @@ server <- function(input, output, session) {
   # ---- limit sci name entry ---- 
   observe({
     updateSelectizeInput(session, "scientific_name",
-                         choices = c("", sort(fw_fish_genus_sp$genus_species)),
+                         choices = c("", "test"),
                          selected = NULL, 
                          server = TRUE,)
   })
@@ -170,10 +170,10 @@ server <- function(input, output, session) {
       df_current <- df()
       paste("energy_density_tbl_samples_", 
             unique(df_current$project_id),
-            "_", Sys.Date(), ".xlsx", sep = "")
+            "_", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      write.xlsx(df(), file, rowNames = TRUE)
+      write.csv(df(), file)
     }
   )
 }

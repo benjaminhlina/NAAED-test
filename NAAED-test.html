@@ -32,7 +32,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="NAAED-test_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="NAAED-test_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="NAAED-test_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="NAAED-test_files/libs/bootstrap/bootstrap-32344e3eecd1c8b2927ce58418235be1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="NAAED-test_files/libs/bootstrap/bootstrap-1cebb4b4c101096c80931f3a0ed1311a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
 <script src="NAAED-test_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
 <script src="NAAED-test_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
@@ -67,29 +67,31 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="test" class="level1">
+<h1>test</h1>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
 #| standalone: true 
 {
-  library(dplyr)
   library(DT) 
-  library(here)
-  library(readr)
-  library(openxlsx)
   library(shiny)
 }
 
 # Define column names
-column_names &lt;- read_csv(here(
-  # 'data-resources', 
-  "data-raw",
-                              "column_names_tbl_sample.csv"))
+column_names &lt;- data.frame(columns = c("project_id", 
+                                       "date", "month", "year", 
+                                       "scientific_name", "wild_lab", 
+                                       "lifestage", "age", "sex", 
+                                       "fork_length", "total_length", "weight", 
+                                       "composite", "composite_n", 
+                                       "tissue_type", "sample_procedure", 
+                                       "waterbody", "area", "site", 
+                                       "site_depth", "latitude (dd.ddddd)", 
+                                       "longitude (ddd.ddddd)", 
+                                       "calorimetry_method")
+)
 
-fw_fish_genus_sp &lt;- read_csv(here(
-   # 'data-resources', 
-   "data-raw",
-                                  "fw_fish_genus_sepcies.csv"))
 
 # ---- shiny appp ----- 
 ui &lt;- fluidPage(
@@ -144,9 +146,9 @@ ui &lt;- fluidPage(
       downloadButton("download", "Download Excel")
     ),
     
-    # mainPanel(
-    #   DTOutput("table")
-    # )
+    mainPanel(
+      DTOutput("table")
+    )
   )
 )
 
@@ -154,7 +156,7 @@ server &lt;- function(input, output, session) {
   # ---- limit sci name entry ---- 
   observe({
     updateSelectizeInput(session, "scientific_name",
-                         choices = c("", sort(fw_fish_genus_sp$genus_species)),
+                         choices = c("", "test"),
                          selected = NULL, 
                          server = TRUE,)
   })
@@ -228,16 +230,17 @@ server &lt;- function(input, output, session) {
       df_current &lt;- df()
       paste("energy_density_tbl_samples_", 
             unique(df_current$project_id),
-            "_", Sys.Date(), ".xlsx", sep = "")
+            "_", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      write.xlsx(df(), file, rowNames = TRUE)
+      write.csv(df(), file)
     }
   )
 }
 
 shinyApp(ui, server)
 </code></pre>
+</section>
 
 </main>
 <!-- /main column -->
